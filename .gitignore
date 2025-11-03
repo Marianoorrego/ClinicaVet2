@@ -1,0 +1,52 @@
+# Eclipse
+.classpath
+.project
+.settings/
+.metadata/
+.recommenders/
+
+# VS Code
+.vscode/
+.history/
+.factorypath
+
+# Archivos compilados
+bin/
+out/
+build/
+target/
+dist/
+release/
+*.class
+*.jar
+*.war
+*.ear
+
+# Dependencias locales
+.mvn/
+.gradle/
+*.iml
+*.ipr
+*.iws
+
+# Logs y temporales
+*.log
+*.tmp
+*.bak
+*.swp
+*.swo
+*.orig
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*~
+
+# Tests y reportes
+test-output/
+surefire-reports/
+
+# Entorno
+.env
