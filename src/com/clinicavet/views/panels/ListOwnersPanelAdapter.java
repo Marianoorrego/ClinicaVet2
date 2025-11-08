@@ -22,7 +22,6 @@ public class ListOwnersPanelAdapter extends JPanel {
     public final JButton btnDeactivate = new JButton("Desactivar");
     public final JButton btnSearch = new JButton("Buscar");
     public final JButton btnClear = new JButton("Limpiar");
-
     private final JTextField txtName = new JTextField(15);
     private final JTextField txtPhone = new JTextField(12);
     private final JTextField txtAddress = new JTextField(20);

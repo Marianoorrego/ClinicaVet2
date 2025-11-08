@@ -155,33 +155,47 @@ public class ListAppointmentsPanelAdapter extends JPanel {
         scroll.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
         add(scroll, BorderLayout.CENTER);
 
-        // panel de búsqueda y filtros
-        JPanel bottomPanel = new JPanel(new BorderLayout(10, 10));
+        // ---------------------------------------------------------------------
+        // Panel de búsqueda y filtros — ahora responsive con GridBagLayout
+        // ---------------------------------------------------------------------
+        JPanel bottomPanel = new JPanel(new GridBagLayout());
         bottomPanel.setBackground(Color.WHITE);
         bottomPanel.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
-        
-        // Panel de filtros (izquierda)
-        JPanel filterPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 8));
-        filterPanel.setBackground(Color.WHITE);
-        filterPanel.setBorder(BorderFactory.createTitledBorder("Filtros de Agenda"));
-        filterPanel.add(new JLabel("Desde:"));
-        filterPanel.add(txtFechaInicio);
-        filterPanel.add(new JLabel("Hasta:"));
-        filterPanel.add(txtFechaFin);
-        filterPanel.add(new JLabel("Médico:"));
-        filterPanel.add(cbFiltroMedico);
-        filterPanel.add(btnFiltrar);
-        filterPanel.add(btnLimpiarFiltro);
-        
-        // Panel de búsqueda (derecha)
-        JPanel searchPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 8));
-        searchPanel.setBackground(Color.WHITE);
-        searchPanel.add(new JLabel("Buscar (mascota / médico):"));
-        searchPanel.add(txtSearch);
-        searchPanel.add(btnSearch);
-        
-        bottomPanel.add(filterPanel, BorderLayout.WEST);
-        bottomPanel.add(searchPanel, BorderLayout.EAST);
+        GridBagConstraints gbc2 = new GridBagConstraints();
+        gbc2.insets = new Insets(6, 6, 6, 6);
+        gbc2.fill = GridBagConstraints.HORIZONTAL;
+
+        // Row 0: Filtros (ocupan la parte izquierda, pueden crecer horizontalmente)
+        gbc2.gridx = 0; gbc2.gridy = 0; gbc2.weightx = 0.0;
+        bottomPanel.add(new JLabel("Desde:"), gbc2);
+        gbc2.gridx = 1; gbc2.weightx = 0.2;
+        bottomPanel.add(txtFechaInicio, gbc2);
+
+        gbc2.gridx = 2; gbc2.weightx = 0.0;
+        bottomPanel.add(new JLabel("Hasta:"), gbc2);
+        gbc2.gridx = 3; gbc2.weightx = 0.2;
+        bottomPanel.add(txtFechaFin, gbc2);
+
+        gbc2.gridx = 4; gbc2.weightx = 0.0;
+        bottomPanel.add(new JLabel("Médico:"), gbc2);
+        gbc2.gridx = 5; gbc2.weightx = 0.4;
+        bottomPanel.add(cbFiltroMedico, gbc2);
+
+        gbc2.gridx = 6; gbc2.weightx = 0.0;
+        bottomPanel.add(btnFiltrar, gbc2);
+        gbc2.gridx = 7;
+        bottomPanel.add(btnLimpiarFiltro, gbc2);
+
+        // Row 1: Buscador (ocupa todo el ancho restante y se expande)
+        gbc2.gridx = 0; gbc2.gridy = 1; gbc2.gridwidth = 6; gbc2.weightx = 1.0;
+        bottomPanel.add(new JLabel("Buscar (mascota / médico):"), gbc2);
+
+        gbc2.gridx = 6; gbc2.gridwidth = 2; gbc2.weightx = 1.0;
+        bottomPanel.add(txtSearch, gbc2);
+
+        gbc2.gridx = 8; gbc2.gridwidth = 1; gbc2.weightx = 0.0;
+        bottomPanel.add(btnSearch, gbc2);
+
         add(bottomPanel, BorderLayout.SOUTH);
 
         revalidate();
@@ -206,7 +220,8 @@ public class ListAppointmentsPanelAdapter extends JPanel {
         // Cargar mascotas (solo nombre y dueño, sin ID)
         List<Pet> pets = controller.listAllPets();
         for (Pet p : pets) {
-            cbMascota.addItem(p.getName() + " - Dueño: " + p.getOwner().getName());
+            String ownerName = p.getOwner() != null ? p.getOwner().getName() : "Sin dueño";
+            cbMascota.addItem(p.getName() + " - Dueño: " + ownerName);
         }
     }
 
