@@ -1,6 +1,7 @@
 package com.clinicavet.controllers;
 
 import com.clinicavet.model.entities.User;
+import com.clinicavet.model.notifications.AuxiliarNotificationObserver;
 import com.clinicavet.model.services.IAppointmentService;
 import com.clinicavet.model.services.IInvoiceService;
 import com.clinicavet.model.services.IMedicalRecordService;
@@ -15,6 +16,7 @@ import com.clinicavet.views.HomeView;
 import com.clinicavet.views.InvoicesListView;
 import com.clinicavet.views.MainWindow;
 import com.clinicavet.views.MedicalRecordsListView;
+import com.clinicavet.views.NotificationsPanel;
 import com.clinicavet.views.OwnersListView;
 import com.clinicavet.views.PaymentsView;
 import com.clinicavet.views.PetsListView;
@@ -39,6 +41,8 @@ public class MainController {
     private MainWindow mainWindow;
     private User currentUser;
     private LoginController loginController;
+    private NotificationsPanel notificationsPanel;
+    private NotificationsController notificationsController;
 
     public MainController(IUserService userService, RolService rolService, IOwnerService ownerService, 
                          IPetService petService, IAppointmentService appointmentService,
@@ -305,12 +309,90 @@ public class MainController {
         mainWindow.showView("reports", view);
     }
 
-    // ========================
-    // LOGOUT
-    // ========================
 
+    /**
+     * 🆕 RFC9: Abrir panel de notificaciones
+     * 
+     * Flujo correcto:
+     * 1. Validar que sea AUXILIAR
+     * 2. Crear observador si es primera vez
+     * 3. Registrarlo en el manager
+     * 4. Crear panel CON el observador
+     * 5. Crear controlador
+     * 6. Mostrar vista
+     */
+    public void openNotifications() {
+        System.out.println("\n" + "=".repeat(80));
+        System.out.println("🔔 [MainController] RFC9 - Abriendo Notificaciones...");
+        System.out.println("=".repeat(80));
+
+        // ✅ PASO 1: Validar que sea AUXILIAR
+        if (!isUserRoleAuxiliar()) {
+            System.err.println("❌ Acceso denegado: Solo AUXILIAR puede ver notificaciones");
+            throw new SecurityException("❌ Acceso denegado: Solo AUXILIAR puede ver notificaciones");
+        }
+
+        System.out.println("✅ Validación de rol superada");
+        System.out.println("   Usuario: " + currentUser.getName());
+        System.out.println("   Rol: " + currentUser.getRol().getName());
+
+        // ✅ PASO 2: Si ya existe, solo mostrar
+        if (notificationsController != null && notificationsPanel != null) {
+            System.out.println("\n📋 Panel ya existe, reutilizando...");
+            mainWindow.showView("notifications", notificationsPanel);
+            System.out.println("✅ Vista de notificaciones mostrada");
+            System.out.println("=".repeat(80) + "\n");
+            return;
+        }
+
+        // ✅ PASO 3: Crear panel SIN observador (null inicialmente)
+        System.out.println("\n📝 Creando panel de notificaciones...");
+        notificationsPanel = new NotificationsPanel(null);
+        System.out.println("   ✅ Panel creado");
+
+        // ✅ PASO 4: Crear controlador (que crea el observador y lo asigna al panel)
+        System.out.println("\n🔄 Creando controlador y observador...");
+        notificationsController = new NotificationsController(notificationsPanel, currentUser);
+        System.out.println("   ✅ Controlador y observador creados");
+
+        // ✅ PASO 5: Mostrar la vista
+        System.out.println("\n📺 Mostrando vista de notificaciones...");
+        mainWindow.showView("notifications", notificationsPanel);
+
+        System.out.println("✅ Vista de notificaciones mostrada correctamente");
+        System.out.println("=".repeat(80) + "\n");
+    }
+
+    /**
+     * 🆕 Obtener el observador actual
+     */
+    public AuxiliarNotificationObserver getCurrentAuxiliarObserver() {
+        if (notificationsController != null) {
+            return notificationsController.getObserver();
+        }
+        return null;
+    }
+
+    // ... existing logout method with cleanup ...
+    
     public void logout() {
-        System.out.println("🔒 [MainController] Cerrando sesión...");
+        System.out.println("\n" + "=".repeat(80));
+        System.out.println("🚪 [MainController] Cerrando sesión...");
+        System.out.println("=".repeat(80));
+
+        // 🔔 Desregistrar observador si es AUXILIAR
+        if (isUserRoleAuxiliar() && notificationsController != null) {
+            System.out.println("🔔 Desregistrando observador de notificaciones...");
+            notificationsController.unregister();
+            
+            // Detener el timer
+            if (notificationsPanel != null) {
+                notificationsPanel.stopAutoRefresh();
+            }
+            
+            notificationsController = null;
+            notificationsPanel = null;
+        }
         
         if (mainWindow != null) {
             mainWindow.setVisible(false);
@@ -318,6 +400,7 @@ public class MainController {
         }
         currentUser = null;
         
-        System.out.println("Sesión cerrada");
+        System.out.println("✅ Sesión cerrada");
+        System.out.println("=".repeat(80) + "\n");
     }
 }

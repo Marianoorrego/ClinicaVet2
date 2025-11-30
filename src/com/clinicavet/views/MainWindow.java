@@ -320,6 +320,31 @@ public class MainWindow extends JFrame {
     private void createAuxiliarMenu() {
         System.out.println("Configurando menú para AUXILIAR...");
 
+        // === MENÚ NOTIFICACIONES (RFC9) ===
+        JMenu menuNotifications = new JMenu("🔔 Notificaciones");
+        menuNotifications.setForeground(Color.WHITE);
+        menuNotifications.setFont(new Font("Arial", Font.BOLD, 12));
+
+        JMenuItem itemNotifications = new JMenuItem("Ver Notificaciones");
+        itemNotifications.setFont(new Font("Arial", Font.PLAIN, 12));
+        itemNotifications.setBackground(Color.WHITE);
+        itemNotifications.setForeground(new Color(44, 62, 80));
+        itemNotifications.addActionListener(e -> {
+            try {
+                System.out.println("   → Abriendo Notificaciones");
+                mainController.openNotifications();
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(this, 
+                    "Error al abrir notificaciones: " + ex.getMessage(), 
+             "Error", 
+                    JOptionPane.ERROR_MESSAGE);
+                ex.printStackTrace();
+            }
+        });
+        
+        menuNotifications.add(itemNotifications);
+        menuBar.add(menuNotifications);
+
         // --- MENÚ FACTURACIÓN ---
         JMenu menuBilling = new JMenu("Facturación");
         menuBilling.setForeground(Color.WHITE);

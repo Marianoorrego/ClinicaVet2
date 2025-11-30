@@ -201,5 +201,26 @@
     "tax": 5700.0,
     "total": 35700.0,
     "totalPaid": 0.0
+  },
+  {
+    "id": "c6160447-9831-4a2e-a203-0cd4cf27c835",
+    "invoiceNumber": "FAC-20251130-00008",
+    "invoiceDate": "2025-11-30",
+    "clientId": "1020345678",
+    "items": [
+      {
+        "id": "adb0e080-f647-4c36-b217-7081c514f776",
+        "description": "examen oral",
+        "quantity": 1,
+        "unitPrice": 45000.0,
+        "category": "SERVICIO"
+      }
+    ],
+    "notes": "",
+    "status": "PENDIENTE",
+    "subtotal": 45000.0,
+    "tax": 8550.0,
+    "total": 53550.0,
+    "totalPaid": 0.0
   }
 ]

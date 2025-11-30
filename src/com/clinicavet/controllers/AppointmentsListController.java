@@ -113,6 +113,11 @@ public class AppointmentsListController {
         }
     }
 
+    /**
+     * ✅ CORREGIDO: Cancelar cita y notificar a auxiliares
+     * 
+     * Usa el nuevo método cancelAppointmentAndNotify() que implementa RFC9
+     */
     private void cancelAppointment() {
         int selectedRow = view.getSelectedRow();
 
@@ -126,20 +131,24 @@ public class AppointmentsListController {
             Appointment appointment = allAppointments.get(selectedRow);
 
             int confirm = JOptionPane.showConfirmDialog(view,
-                    "¿Cancelar la cita de " + appointment.getMascota().getName() + "?",
-                    "Confirmar",
+                    "¿Cancelar la cita de " + appointment.getMascota().getName() + "?\n\n" +
+                    "Se notificará a los auxiliares sobre las disponibilidades liberadas.",
+                    "Confirmar cancelación",
                     JOptionPane.YES_NO_OPTION);
 
             if (confirm == JOptionPane.YES_OPTION) {
-                appointment.setEstado(Estado.CANCELADA);
-                boolean updated = appointmentService.updateAppointment(appointment);
+                // 🆕 RFC9: Usar el nuevo método que notifica automáticamente
+                appointmentService.cancelAppointmentAndNotify(appointment.getId());
                 
-                if (updated) {
-                    loadAppointments("");
-                    JOptionPane.showMessageDialog(view, "Cita cancelada correctamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
-                } else {
-                    JOptionPane.showMessageDialog(view, "No se pudo cancelar la cita", "Error", JOptionPane.ERROR_MESSAGE);
-                }
+                // Actualizar tabla
+                loadAppointments("");
+                view.clearSearch();
+                
+                JOptionPane.showMessageDialog(view, 
+                    "✅ Cita cancelada\n" +
+                    "📢 Notificaciones enviadas a auxiliares\n" +
+                    "📊 Disponibilidades actualizadas", 
+                    "Éxito", JOptionPane.INFORMATION_MESSAGE);
             }
         }
     }
